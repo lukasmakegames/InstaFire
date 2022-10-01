@@ -6,20 +6,38 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Query
+import com.lukasgamedev.instafire.databinding.ActivityLoginBinding
+import com.lukasgamedev.instafire.databinding.ActivityPostsBinding
 import com.lukasgamedev.instafire.models.Post
 
 private const val TAG = "PostActivity"
 
 class PostsActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivityPostsBinding
+
     private lateinit var firestoreDb: FirebaseFirestore
+    private lateinit var posts: MutableList<Post>
+    private lateinit var adapter: PostsAdapter
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_posts)
+        binding = ActivityPostsBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+        //Create the layout file that represent one post - DONE
+        //Create data source - DONE
+        posts = mutableListOf()
+        //Create the adapter
+        adapter = PostsAdapter(this, posts)
+        //Bind the layout manager and the adapter to the RV
+        binding.rvPosts.adapter = adapter
+        binding.rvPosts.layoutManager = LinearLayoutManager(this)
 
         firestoreDb = FirebaseFirestore.getInstance()
         val postsReference = firestoreDb
@@ -34,6 +52,9 @@ class PostsActivity : AppCompatActivity() {
             }
 
             val postList = snapshot.toObjects(Post::class.java)
+            posts.clear()
+            posts.addAll(postList)
+            adapter.notifyDataSetChanged()
 
             for (post in postList){
                 Log.i(TAG,"Post ${post}")
