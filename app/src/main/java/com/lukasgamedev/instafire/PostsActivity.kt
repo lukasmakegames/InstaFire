@@ -8,6 +8,8 @@ import android.view.Menu
 import android.view.MenuItem
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.Query
+import com.lukasgamedev.instafire.models.Post
 
 private const val TAG = "PostActivity"
 
@@ -20,16 +22,21 @@ class PostsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_posts)
 
         firestoreDb = FirebaseFirestore.getInstance()
-        val postsReference = firestoreDb.collection("posts")
+        val postsReference = firestoreDb
+            .collection("posts")
+            .limit(20)
+            .orderBy("creation_time_ms", Query.Direction.DESCENDING)
         postsReference.addSnapshotListener {
             snapshot, exception ->
             if (exception != null || snapshot == null){
-                Log.e(TAG,"Esception when quering post", exception)
+                Log.e(TAG,"Exception when querying post", exception)
                 return@addSnapshotListener
             }
 
-            for (document in snapshot.documents){
-                Log.i(TAG,"Document ${document.id}: ${document.data}")
+            val postList = snapshot.toObjects(Post::class.java)
+
+            for (post in postList){
+                Log.i(TAG,"Post ${post}")
             }
         }
     }
