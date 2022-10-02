@@ -17,7 +17,7 @@ import com.lukasgamedev.instafire.models.Post
 import com.lukasgamedev.instafire.models.User
 
 private const val TAG = "PostActivity"
-private const val EXTRA_USERNAME="EXTRA_USERNAME"
+const val EXTRA_USERNAME="EXTRA_USERNAME"
 
 open class PostsActivity : AppCompatActivity() {
 
